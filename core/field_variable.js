@@ -175,23 +175,52 @@ Blockly.FieldVariable.dropdownChange = function(text) {
     return newVar;
   }
   var workspace = this.sourceBlock_.workspace;
-  if (text == Blockly.Msg.RENAME_VARIABLE) {
-    var oldVar = this.getText();
-    text = promptName(Blockly.Msg.RENAME_VARIABLE_TITLE.replace('%1', oldVar),
-                      oldVar);
+    
+//  if (text == Blockly.Msg.RENAME_VARIABLE) {
+//    var oldVar = this.getText();
+//    text = promptName(Blockly.Msg.RENAME_VARIABLE_TITLE.replace('%1', oldVar),
+//                      oldVar);
+//    if (text) {
+//      Blockly.Variables.renameVariable(oldVar, text, workspace);
+//    }
+//    return null;
+//  } else if (text == Blockly.Msg.NEW_VARIABLE) {
+//    text = promptName(Blockly.Msg.NEW_VARIABLE_TITLE, '');
+//    // Since variables are case-insensitive, ensure that if the new variable
+//    // matches with an existing variable, the new case prevails throughout.
+//    if (text) {
+//      Blockly.Variables.renameVariable(text, text, workspace);
+//      return text;
+//    }
+//    return null;
+//  }
+    
+  // DAW START
+  function renameCallback(field, oldVar, text, workspace) {
     if (text) {
       Blockly.Variables.renameVariable(oldVar, text, workspace);
     }
-    return null;
-  } else if (text == Blockly.Msg.NEW_VARIABLE) {
-    text = promptName(Blockly.Msg.NEW_VARIABLE_TITLE, '');
-    // Since variables are case-insensitive, ensure that if the new variable
-    // matches with an existing variable, the new case prevails throughout.
+  }
+    
+  function newCallback(field, oldVar, text, workspace) {
     if (text) {
       Blockly.Variables.renameVariable(text, text, workspace);
-      return text;
+      field.setValue(text);
     }
+  }
+    
+  // Process based on the message
+  if (text == Blockly.Msg.RENAME_VARIABLE) {
+    Blockly.hideChaff();
+    var oldVar = this.getText();
+    PromptUser(Blockly.Msg.RENAME_VARIABLE_TITLE.replace('%1', oldVar), this, oldVar, workspace, renameCallback);
+    return null;
+  } else if (text == Blockly.Msg.NEW_VARIABLE) {
+    Blockly.hideChaff();
+    PromptUser(Blockly.Msg.NEW_VARIABLE_TITLE, this, '', workspace, newCallback);
     return null;
   }
+  // DAW END
+    
   return undefined;
 };
